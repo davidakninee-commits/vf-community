@@ -328,6 +328,26 @@ nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 16px;displa
 .gs-name{font-size:11px;font-weight:600;color:var(--tx)}
 .gs-btn.on .gs-name{color:var(--pu)}
 .settings-save{width:100%;padding:11px;background:var(--gr);color:#000;border:none;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer}
+/* Profile */
+.profile-av{width:72px;height:72px;border-radius:50%;background:var(--s2);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;overflow:hidden;flex-shrink:0;position:relative;transition:border-color .15s}
+.profile-av:hover{border-color:var(--gr)}
+.profile-av img{width:100%;height:100%;object-fit:cover;display:block}
+.profile-av-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:16px}
+.profile-av:hover .profile-av-overlay{opacity:1}
+.profile-row{display:flex;align-items:center;gap:14px}
+.profile-info{flex:1}
+.danger-btn{background:none;border:1px solid var(--rd);color:var(--rd);border-radius:var(--r);padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s}
+.danger-btn:hover{background:var(--rd);color:#fff}
+.export-btn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);border-radius:var(--r);padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.export-btn:hover{border-color:var(--gr);color:var(--gr)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-lbl{font-size:13px}
+.toggle-sub{font-size:11px;color:var(--mu);margin-top:2px}
+.toggle-sw{width:40px;height:22px;border-radius:11px;background:var(--bd);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.toggle-sw.on{background:var(--gr)}
+.toggle-sw::after{content:'';position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle-sw.on::after{transform:translateX(-18px)}
 /* TV */
 .tv-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center}
 .tv-ov.on{display:flex}
@@ -532,6 +552,25 @@ nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 16px;displa
 <!-- P4 -->
 <div class="page" id="p4">
   <div class="settings-grid">
+
+    <!-- פרופיל -->
+    <div class="settings-card" style="grid-column:1/-1">
+      <h3>פרופיל</h3>
+      <div class="profile-row">
+        <div class="profile-av" onclick="triggerAvatarUpload()" title="שנה תמונה">
+          <span id="profileEmoji">👤</span>
+          <img id="profileImg" style="display:none">
+          <div class="profile-av-overlay">📷</div>
+        </div>
+        <input type="file" id="avatarFile" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+        <div class="profile-info">
+          <div class="fi2" style="margin-bottom:8px"><label>שם תצוגה</label><input type="text" id="displayName" placeholder="שם שיופיע בממשק"></div>
+          <div class="fi2"><label>אימייל</label><input type="email" id="displayEmail" placeholder="your@email.com" readonly style="opacity:.5;cursor:not-allowed"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- תיק + סוג סוחר -->
     <div class="settings-card"><h3>תיק השקעות</h3><div class="fi2"><label>שווי תיק ($)</label><input type="number" id="portVal" placeholder="100000"></div></div>
     <div class="settings-card"><h3>סוג סוחר</h3>
       <div class="tt-grid">
@@ -540,6 +579,8 @@ nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 16px;displa
         <div class="tt-btn" data-type="investor" onclick="setTT(this)"><div class="tt-icon">🏦</div><div class="tt-name">משקיע</div><div class="tt-desc">חודשים-שנים</div></div>
       </div>
     </div>
+
+    <!-- נכסים + רמה -->
     <div class="settings-card"><h3>נכסים מועדפים</h3>
       <div class="asset-grid">
         <div class="asset-btn on" data-asset="stocks" onclick="toggleAsset(this)"><div class="asset-chk">✓</div><div class="asset-name">מניות</div></div>
@@ -556,6 +597,8 @@ nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 16px;displa
       </div>
       <div class="ai-prev"><div class="ai-prev-title">AI יתאים לך את:</div><div id="aiPrevList"></div></div>
     </div>
+
+    <!-- מאמן -->
     <div class="settings-card" style="grid-column:1/-1"><h3>המאמן שלך</h3>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
         <div class="fi2"><label>שם המאמן</label><input type="text" id="coachNameIn" placeholder="דוד" oninput="updateCoachPreview()"></div>
@@ -577,6 +620,39 @@ nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:0 16px;displa
         <div style="font-size:12px;color:var(--mu);margin-top:4px" id="coachPrevDesc">סלנג מסחר, ישיר, אומר את האמת גם כשכואב</div>
       </div>
     </div>
+
+    <!-- התראות -->
+    <div class="settings-card"><h3>התראות</h3>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">פתיחת שוק</div><div class="toggle-sub">עדכון יומי ב-09:30</div></div>
+        <button class="toggle-sw on" type="button" id="notif1" onclick="toggleSw(this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">אירועים כלכליים</div><div class="toggle-sub">לפני CPI, NFP, Fed</div></div>
+        <button class="toggle-sw on" type="button" id="notif2" onclick="toggleSw(this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">פידבק מהמאמן</div><div class="toggle-sub">כשהמאמן רוצה לדבר</div></div>
+        <button class="toggle-sw" type="button" id="notif3" onclick="toggleSw(this)"></button>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">דיווחי חברות שלי</div><div class="toggle-sub">לפי עסקאות פתוחות</div></div>
+        <button class="toggle-sw on" type="button" id="notif4" onclick="toggleSw(this)"></button>
+      </div>
+    </div>
+
+    <!-- ייצוא + מחיקה -->
+    <div class="settings-card"><h3>נתונים וחשבון</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="export-btn" type="button" onclick="exportCSV()">📥 ייצוא עסקאות CSV</button>
+        <button class="export-btn" type="button" onclick="exportJSON()">📦 ייצוא כל הנתונים JSON</button>
+        <div style="border-top:1px solid var(--bd);margin-top:6px;padding-top:14px">
+          <div style="font-size:11px;color:var(--mu);margin-bottom:10px">פעולה זו אינה ניתנת לביטול</div>
+          <button class="danger-btn" type="button" onclick="deleteAccount()">🗑 מחק חשבון</button>
+        </div>
+      </div>
+    </div>
+
   </div>
   <button class="settings-save" type="button" onclick="saveSettings()">שמור הגדרות</button>
 </div>
@@ -661,7 +737,7 @@ var G={user:null,isGuest:false,T:[],TH:[],port:0,liveP:{},weekOffset:0,
   lobbyInited:false,calTab:'econ',deleteKey:null};
 
 var FH='d8q4619r01qr03ne3sngd8q4619r01qr03ne3so0';
-var NKEY='0d3f117a270d4611a4cec2c0a221a3dc';
+var NKEY='602115fe1a8bf6dd85dc543b6bb86651';
 var TDK=['884f04903746437da64bb71f29f001f6','adc8790487a04ecc9779ce00e7aa407f','9be0475eefa34c81a3e623d0b531d9d0','672f98af1acf49b9a282c9029aa22bb6'];
 var tdi=0;
 
@@ -819,6 +895,20 @@ function loadData(uid){
   fbDB.ref('users/'+uid+'/trades').on('value',function(s){G.T=[];if(s.exists())s.forEach(function(c){G.T.push(Object.assign({},c.val(),{_k:c.key}));});renderAll();fetchLivePrices();});
   fbDB.ref('users/'+uid+'/thoughts').on('value',function(s){G.TH=[];if(s.exists())s.forEach(function(c){G.TH.push(Object.assign({},c.val(),{_k:c.key}));});renderThoughts();});
   fbDB.ref('users/'+uid+'/portfolio').on('value',function(s){G.port=s.exists()?s.val():0;var el=document.getElementById('portVal');if(el&&G.port)el.value=G.port;});
+  // Load avatar
+fbDB.ref('users/'+uid+'/settings/avatar').once('value',function(s){
+  if(s.exists()){var img=document.getElementById('profileImg');var em=document.getElementById('profileEmoji');if(img){img.src=s.val();img.style.display='block';}if(em)em.style.display='none';}
+});
+// Load display name
+var cu2=fbAuth.currentUser;
+if(cu2){var dn=document.getElementById('displayName');if(dn)dn.value=cu2.displayName||'';var de=document.getElementById('displayEmail');if(de)de.value=cu2.email||'';}
+fbDB.ref('users/'+uid+'/profile').on('value',function(s){
+    if(!s.exists())return;var v=s.val();
+    if(v.displayName){var el=document.getElementById('displayName');if(el)el.value=v.displayName;}
+    if(v.avatar){var av=document.getElementById('avatarCircle');if(av){av.style.backgroundImage='url('+v.avatar+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';}}
+  });
+  // Set email readonly
+  var emailEl=document.getElementById('displayEmail');if(emailEl&&fbAuth.currentUser)emailEl.value=fbAuth.currentUser.email||'';
   fbDB.ref('users/'+uid+'/settings').on('value',function(s){
     if(!s.exists())return;var v=s.val();
     if(v.traderType)G.traderType=v.traderType;if(v.level)G.traderLevel=v.level;if(v.assets)G.traderAssets=v.assets;
@@ -1000,14 +1090,17 @@ function normNA(it){
   };
 }
 
+function normGN(it){
+  return{headline:it.title||'',source:(it.source&&it.source.name)||'',url:it.url||'#',image:it.image||'',when:it.publishedAt?new Date(it.publishedAt):null};
+}
+
 async function fetchNews(cat){
-  // Try NewsAPI first
   try{
-    var q=cat==='crypto'?'bitcoin OR ethereum OR crypto':'stock market OR wall street OR S&P 500 OR nasdaq OR dow jones';
-    var r=await fetch('https://newsapi.org/v2/everything?q='+encodeURIComponent(q)+'&language=en&sortBy=publishedAt&pageSize=12&apiKey='+NKEY);
+    var q=cat==='crypto'?'bitcoin OR ethereum OR cryptocurrency':'stock market OR nasdaq OR S&P500 OR wall street OR trading';
+    var r=await fetch('https://gnews.io/api/v4/search?q='+encodeURIComponent(q)+'&lang=en&country=us&max=10&sortby=publishedAt&apikey='+NKEY);
     var d=await r.json();
     if(d&&d.articles&&d.articles.length){
-      return d.articles.filter(function(a){return a.urlToImage&&a.title&&a.url;}).slice(0,12).map(normNA);
+      return d.articles.filter(function(a){return a.image&&a.title&&a.url;}).slice(0,10).map(normGN);
     }
   }catch(e){}
   // Fallback to Finnhub
@@ -1016,13 +1109,12 @@ async function fetchNews(cat){
 }
 
 async function fetchMyNews(syms){
-  // Try NewsAPI for company news
   try{
     var q=syms.slice(0,3).join(' OR ');
-    var r=await fetch('https://newsapi.org/v2/everything?q='+encodeURIComponent(q)+'&language=en&sortBy=publishedAt&pageSize=12&apiKey='+NKEY);
+    var r=await fetch('https://gnews.io/api/v4/search?q='+encodeURIComponent(q)+'&lang=en&max=10&sortby=publishedAt&apikey='+NKEY);
     var d=await r.json();
     if(d&&d.articles&&d.articles.length){
-      return d.articles.filter(function(a){return a.urlToImage&&a.title&&a.url;}).slice(0,12).map(normNA);
+      return d.articles.filter(function(a){return a.image&&a.title&&a.url;}).slice(0,10).map(normGN);
     }
   }catch(e){}
   // Fallback to Finnhub
@@ -1250,11 +1342,94 @@ function setTT(btn){G.traderType=btn.dataset.type;document.querySelectorAll('.tt
 function toggleAsset(btn){var a=btn.dataset.asset,idx=G.traderAssets.indexOf(a);if(idx>-1)G.traderAssets.splice(idx,1);else G.traderAssets.push(a);btn.classList.toggle('on');var chk=btn.querySelector('.asset-chk');if(chk)chk.textContent=btn.classList.contains('on')?'✓':'';}
 function setLevel(btn){G.traderLevel=btn.dataset.level;document.querySelectorAll('.level-btn').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');}
 function applySettings(){document.querySelectorAll('.tt-btn').forEach(function(b){b.classList.toggle('on',b.dataset.type===G.traderType);});document.querySelectorAll('.level-btn').forEach(function(b){b.classList.toggle('on',b.dataset.level===G.traderLevel);});document.querySelectorAll('.asset-btn').forEach(function(b){var on=G.traderAssets.indexOf(b.dataset.asset)>-1;b.classList.toggle('on',on);var chk=b.querySelector('.asset-chk');if(chk)chk.textContent=on?'✓':'';});updateAIPreview();}
+function triggerAvatarUpload(){document.getElementById('avatarFile').click();}
+function handleAvatarUpload(input){
+  if(!input.files||!input.files[0])return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=document.getElementById('profileImg');
+    var em=document.getElementById('profileEmoji');
+    if(img){img.src=e.target.result;img.style.display='block';}
+    if(em)em.style.display='none';
+    // Save to Firebase
+    var cu=fbAuth.currentUser;
+    if(cu)fbDB.ref('users/'+cu.uid+'/settings/avatar').set(e.target.result);
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function toggleSw(btn){btn.classList.toggle('on');}
+function exportCSV(){
+  if(!G.T.length){alert('אין עסקאות לייצוא');return;}
+  var headers=['תאריך','סמל','כיוון','כניסה','יציאה','כמות','P&L','אסטרטגיה','ציון','הערות'];
+  var rows=G.T.map(function(t){
+    var pl=t.exit?((t.exit-t.entry)*(t.dir==='Long'?1:-1)*(t.qty||1)).toFixed(2):'';
+    return[t.date||'',t.sym||'',t.dir||'',t.entry||'',t.exit||'',t.qty||1,pl,t.strat||'',t.score||'',t.notes||''].join(',');
+  });
+  var csv='﻿'+headers.join(',')+'
+'+rows.join('
+');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='vfcommunity_trades_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+}
+function exportJSON(){
+  var data={trades:G.T,thoughts:G.TH,exported:new Date().toISOString()};
+  var a=document.createElement('a');a.href='data:application/json,'+encodeURIComponent(JSON.stringify(data,null,2));a.download='vfcommunity_data_'+new Date().toISOString().split('T')[0]+'.json';a.click();
+}
+function deleteAccount(){
+  if(!confirm('האם אתה בטוח? פעולה זו תמחק את כל הנתונים שלך ולא ניתן לשחזרם!'))return;
+  if(!confirm('אישור אחרון — מחיקת כל הנתונים?'))return;
+  var cu=fbAuth.currentUser;if(!cu)return;
+  fbDB.ref('users/'+cu.uid).remove().then(function(){return cu.delete();}).then(function(){showP('pgLogin');}).catch(function(e){alert('שגיאה: '+e.message+'. אנא התחבר מחדש ונסה שוב.');});
+}
+function handleAvatar(input){
+  if(!input.files||!input.files[0])return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var av=document.getElementById('avatarCircle');
+    if(av){av.style.backgroundImage='url('+e.target.result+')';av.style.backgroundSize='cover';av.style.backgroundPosition='center';av.textContent='';}
+    G.avatarData=e.target.result;
+    // Save to Firebase
+    var cu=fbAuth.currentUser;if(cu)fbDB.ref('users/'+cu.uid+'/profile/avatar').set(e.target.result.substring(0,5000));
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function setLang(btn){
+  G.lang=btn.dataset.lang;
+  document.querySelectorAll('[data-lang]').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');
+}
+function exportCSV(){
+  if(!G.T.length){alert('אין עסקאות לייצוא');return;}
+  var rows=[['סמל','כיוון','כניסה','יציאה','כמות','רווח/הפסד','תאריך','אסטרטגיה','ציון','הערות']];
+  G.T.forEach(function(t){
+    var pl=t.exit?((t.exit-t.entry)*(t.dir==='Long'?1:-1)*(t.qty||1)).toFixed(2):'פתוח';
+    rows.push([t.sym||'',t.dir||'',t.entry||'',t.exit||'',t.qty||1,pl,t.date||'',t.strat||'',t.score||'',t.notes||'']);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('
+');
+  var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vfcommunity_trades.csv';a.click();
+}
+function exportJSON(){
+  var data={trades:G.T,thoughts:G.TH,exported:new Date().toISOString()};
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vfcommunity_backup.json';a.click();
+}
+function changePassword(){
+  var cu=fbAuth.currentUser;if(!cu){alert('לא מחובר');return;}
+  fbAuth.sendPasswordResetEmail(cu.email).then(function(){alert('מייל לאיפוס סיסמה נשלח ל-'+cu.email);}).catch(function(e){alert('שגיאה: '+e.message);});
+}
+function deleteAccount(){
+  if(!confirm('האם אתה בטוח? פעולה זו תמחק את כל הנתונים שלך לצמיתות!'))return;
+  if(!confirm('אישור סופי — מחיקת חשבון?'))return;
+  var cu=fbAuth.currentUser;if(!cu)return;
+  fbDB.ref('users/'+cu.uid).remove().then(function(){return cu.delete();}).then(function(){showP('pgLogin');}).catch(function(e){alert('שגיאה: '+e.message+' — אולי צריך להתחבר מחדש.');});
+}
 function saveSettings(){
   var cu=fbAuth.currentUser;if(!cu){alert('התחבר כדי לשמור');return;}
   var p=parseFloat((document.getElementById('portVal')&&document.getElementById('portVal').value)||0);if(p)fbDB.ref('users/'+cu.uid+'/portfolio').set(p);
   var nm=(document.getElementById('coachNameIn')&&document.getElementById('coachNameIn').value)||'';if(nm)G.coachName=nm;
-  fbDB.ref('users/'+cu.uid+'/settings').set({traderType:G.traderType||'daily',level:G.traderLevel||'advanced',assets:G.traderAssets||['stocks','crypto'],coach:{name:G.coachName||'דוד',gender:G.coachGender||'male',style:G.coachStyle||'casual'}}).then(function(){updateCoachPreview();alert('נשמר ✓');}).catch(function(e){alert('שגיאה: '+e.message);});
+  var dn=(document.getElementById('displayName')&&document.getElementById('displayName').value)||'';
+  if(dn&&cu.displayName!==dn){cu.updateProfile({displayName:dn}).then(function(){var b=document.getElementById('uBadge');if(b)b.textContent='👤 '+dn;});}
+  fbDB.ref('users/'+cu.uid+'/settings').update({traderType:G.traderType||'daily',level:G.traderLevel||'advanced',assets:G.traderAssets||['stocks','crypto'],coach:{name:G.coachName||'דוד',gender:G.coachGender||'male',style:G.coachStyle||'casual'}}).then(function(){updateCoachPreview();alert('נשמר ✓');}).catch(function(e){alert('שגיאה: '+e.message);});
 }
 
 // ── Init
