@@ -1365,9 +1365,7 @@ function exportCSV(){
     var pl=t.exit?((t.exit-t.entry)*(t.dir==='Long'?1:-1)*(t.qty||1)).toFixed(2):'';
     return[t.date||'',t.sym||'',t.dir||'',t.entry||'',t.exit||'',t.qty||1,pl,t.strat||'',t.score||'',t.notes||''].join(',');
   });
-  var csv='﻿'+headers.join(',')+'
-'+rows.join('
-');
+  var csv='\uFEFF'+headers.join(',')+String.fromCharCode(10)+rows.join(String.fromCharCode(10));
   var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='vfcommunity_trades_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
 }
 function exportJSON(){
