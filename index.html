@@ -661,6 +661,7 @@ var G={user:null,isGuest:false,T:[],TH:[],port:0,liveP:{},weekOffset:0,
   lobbyInited:false,calTab:'econ',deleteKey:null};
 
 var FH='d8q4619r01qr03ne3sngd8q4619r01qr03ne3so0';
+var NKEY='0d3f117a270d4611a4cec2c0a221a3dc';
 var TDK=['884f04903746437da64bb71f29f001f6','adc8790487a04ecc9779ce00e7aa407f','9be0475eefa34c81a3e623d0b531d9d0','672f98af1acf49b9a282c9029aa22bb6'];
 var tdi=0;
 
@@ -988,8 +989,47 @@ function renderEarnCalendar(){
 
 // ── News
 function normFH(it){return{headline:it.headline||'',source:it.source||'',url:it.url||'#',image:it.image||'',when:it.datetime?new Date(it.datetime*1000):null};}
-async function fetchNews(cat){try{var r=await fetch('https://finnhub.io/api/v1/news?category='+cat+'&token='+FH);var d=await r.json();if(Array.isArray(d)&&d.length)return d.slice(0,12).map(normFH);}catch(e){}return[];}
-async function fetchMyNews(syms){var all=[],now=new Date(),from=new Date(now-7*24*3600*1000),fmt=function(d){return d.toISOString().split('T')[0];};await Promise.all(syms.slice(0,3).map(function(s){return fetch('https://finnhub.io/api/v1/company-news?symbol='+s+'&from='+fmt(from)+'&to='+fmt(now)+'&token='+FH).then(function(r){return r.json();}).then(function(d){if(Array.isArray(d))all=all.concat(d.slice(0,4));}).catch(function(){});}));var seen={};return all.filter(function(n){if(seen[n.url])return false;seen[n.url]=true;return true;}).map(normFH);}
+
+function normNA(it){
+  return{
+    headline:it.title||'',
+    source:(it.source&&it.source.name)||'',
+    url:it.url||'#',
+    image:it.urlToImage||'',
+    when:it.publishedAt?new Date(it.publishedAt):null
+  };
+}
+
+async function fetchNews(cat){
+  // Try NewsAPI first
+  try{
+    var q=cat==='crypto'?'bitcoin OR ethereum OR crypto':'stock market OR wall street OR S&P 500 OR nasdaq OR dow jones';
+    var r=await fetch('https://newsapi.org/v2/everything?q='+encodeURIComponent(q)+'&language=en&sortBy=publishedAt&pageSize=12&apiKey='+NKEY);
+    var d=await r.json();
+    if(d&&d.articles&&d.articles.length){
+      return d.articles.filter(function(a){return a.urlToImage&&a.title&&a.url;}).slice(0,12).map(normNA);
+    }
+  }catch(e){}
+  // Fallback to Finnhub
+  try{var r2=await fetch('https://finnhub.io/api/v1/news?category='+cat+'&token='+FH);var d2=await r2.json();if(Array.isArray(d2)&&d2.length)return d2.slice(0,12).map(normFH);}catch(e){}
+  return[];
+}
+
+async function fetchMyNews(syms){
+  // Try NewsAPI for company news
+  try{
+    var q=syms.slice(0,3).join(' OR ');
+    var r=await fetch('https://newsapi.org/v2/everything?q='+encodeURIComponent(q)+'&language=en&sortBy=publishedAt&pageSize=12&apiKey='+NKEY);
+    var d=await r.json();
+    if(d&&d.articles&&d.articles.length){
+      return d.articles.filter(function(a){return a.urlToImage&&a.title&&a.url;}).slice(0,12).map(normNA);
+    }
+  }catch(e){}
+  // Fallback to Finnhub
+  var all=[],now=new Date(),from=new Date(now-7*24*3600*1000),fmt=function(d){return d.toISOString().split('T')[0];};
+  await Promise.all(syms.slice(0,3).map(function(s){return fetch('https://finnhub.io/api/v1/company-news?symbol='+s+'&from='+fmt(from)+'&to='+fmt(now)+'&token='+FH).then(function(r){return r.json();}).then(function(d){if(Array.isArray(d))all=all.concat(d.slice(0,4));}).catch(function(){});}));
+  var seen={};return all.filter(function(n){if(seen[n.url])return false;seen[n.url]=true;return true;}).map(normFH);
+}
 function setNewsTab(tab,btn){G.newsTab=tab;G.newsCache={gen:[],crypto:[],my:[]};document.querySelectorAll('.ntab2').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderNews();}
 function wen(n){return n.when?n.when.toLocaleDateString('he-IL'):'';}
 function paintNews(items){
